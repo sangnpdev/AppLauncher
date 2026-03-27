@@ -1,0 +1,35 @@
+{
+  "Profiles": [
+    {
+      "Name": "Recruitment Website | Carevo",
+      "Apps": [
+        {
+          "Name": "Docker Desktop",
+          "Path": "C:\\Program Files\\Docker\\Docker\\Docker Desktop.exe"
+        },
+        {
+          "Name": "idea64",
+          "Path": "D:\\Application\\IntelliJ IDEA 2025.3.3\\bin\\idea64.exe"
+        },
+        {
+          "Name": "pgAdmin4",
+          "Path": "D:\\Application\\pgAdmin 4\\runtime\\pgAdmin4.exe"
+        },
+        {
+          "Name": "Code",
+          "Path": "D:\\Application\\Microsoft VS Code\\Code.exe"
+        },
+        {
+          "Name": "Apidog",
+          "Path": "D:\\Application\\ApiDog\\Apidog.exe"
+        }
+      ],
+      "Backend": {
+        "FolderPath": "",
+        "Command": ""
+      },
+      "AppCountLabel": "5 apps",
+      "BackendStatusLabel": "No backend"
+    }
+  ]
+}
