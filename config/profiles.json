@@ -30,6 +30,25 @@
       },
       "AppCountLabel": "5 apps",
       "BackendStatusLabel": "No backend"
+    },
+    {
+      "Name": "Food Market Narrator",
+      "Apps": [
+        {
+          "Name": "dbeaver",
+          "Path": "D:\\Application\\DBeaver\\dbeaver.exe"
+        },
+        {
+          "Name": "Visual Studio 2026",
+          "Path": "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\Common7\\IDE\\devenv.exe"
+        }
+      ],
+      "Backend": {
+        "FolderPath": "",
+        "Command": ""
+      },
+      "AppCountLabel": "2 apps",
+      "BackendStatusLabel": "No backend"
     }
   ]
 }
