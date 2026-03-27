@@ -203,13 +203,16 @@ public partial class MainWindow : Window
             return;
         }
 
-        var result = MessageBox.Show(
-            $"Delete profile '{profile.Name}'?",
-            "Confirm",
-            MessageBoxButton.YesNo,
-            MessageBoxImage.Question);
+        var confirmed = AppDialog.ShowConfirm(
+            this,
+            "Delete Profile",
+            $"Delete profile '{profile.Name}'?\n\nThis removes the saved workspace configuration for this profile.",
+            primaryButtonText: "Delete Profile",
+            secondaryButtonText: "Keep Profile",
+            tone: AppDialogTone.Danger,
+            isPrimaryDestructive: true);
 
-        if (result != MessageBoxResult.Yes)
+        if (!confirmed)
         {
             return;
         }
@@ -238,7 +241,7 @@ public partial class MainWindow : Window
         var newName = ProfileNameTextBox.Text.Trim();
         if (string.IsNullOrWhiteSpace(newName))
         {
-            MessageBox.Show("Profile name cannot be empty.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+            AppDialog.ShowWarning(this, "Profile Name Required", "Profile name cannot be empty.");
             return;
         }
 
@@ -271,14 +274,14 @@ public partial class MainWindow : Window
         var profile = GetSelectedProfile();
         if (profile is null)
         {
-            MessageBox.Show("Please select a profile first.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+            AppDialog.ShowInfo(this, "Select A Profile", "Please select a profile first.");
             return;
         }
 
         var appPath = NewAppPathTextBox.Text.Trim();
         if (string.IsNullOrWhiteSpace(appPath))
         {
-            MessageBox.Show("Please enter app path.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+            AppDialog.ShowWarning(this, "App Path Required", "Please enter app path.");
             return;
         }
 
@@ -290,7 +293,7 @@ public partial class MainWindow : Window
 
         if (profile.Apps.Any(a => string.Equals(a.Path, appPath, StringComparison.OrdinalIgnoreCase)))
         {
-            MessageBox.Show("This app path already exists in the selected profile.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+            AppDialog.ShowInfo(this, "App Already Added", "This app path already exists in the selected profile.");
             return;
         }
 
@@ -322,7 +325,7 @@ public partial class MainWindow : Window
 
         if (profile.Apps.Any(a => string.Equals(a.Path, selectedApp.Path, StringComparison.OrdinalIgnoreCase)))
         {
-            MessageBox.Show("Selected app already exists in this profile.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+            AppDialog.ShowInfo(this, "App Already Added", "Selected app already exists in this profile.");
             return;
         }
 
@@ -343,6 +346,20 @@ public partial class MainWindow : Window
         var profile = GetSelectedProfile();
         var selectedApp = ProfileAppsListBox.SelectedItem as AppEntry;
         if (profile is null || selectedApp is null)
+        {
+            return;
+        }
+
+        var confirmed = AppDialog.ShowConfirm(
+            this,
+            "Remove App From Profile",
+            $"Remove '{selectedApp.Name}' from profile '{profile.Name}'?\n\nIf this app exists in other profiles, it will remain available in the shared library.",
+            primaryButtonText: "Remove App",
+            secondaryButtonText: "Cancel",
+            tone: AppDialogTone.Danger,
+            isPrimaryDestructive: true);
+
+        if (!confirmed)
         {
             return;
         }
@@ -388,7 +405,7 @@ public partial class MainWindow : Window
         var profile = GetSelectedProfile();
         if (profile is null)
         {
-            MessageBox.Show("Please select a profile.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+            AppDialog.ShowInfo(this, "Select A Profile", "Please select a profile.");
             return;
         }
 
@@ -466,7 +483,7 @@ public partial class MainWindow : Window
 
         if (issues.Length == 0)
         {
-            MessageBox.Show($"Started {startedCount} item(s).", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            AppDialog.ShowSuccess(this, "Launch Complete", $"Started {startedCount} item(s).");
             return;
         }
 
@@ -482,7 +499,13 @@ public partial class MainWindow : Window
         }
 
         message += issues.ToString();
-        MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Information);
+        AppDialog.ShowMessage(this, new AppDialogOptions
+        {
+            Title = title,
+            Message = message,
+            Tone = skippedCount > 0 ? AppDialogTone.Info : AppDialogTone.Warning,
+            PrimaryButtonText = "Review"
+        });
     }
 
     private static bool IsAppAlreadyRunning(string appPath)
