@@ -44,11 +44,11 @@
         }
       ],
       "Backend": {
-        "FolderPath": "",
-        "Command": ""
+        "FolderPath": "D:\\Program\\food-market-narrator\\FoodMarketNarrator.Api",
+        "Command": "dotnet run"
       },
       "AppCountLabel": "2 apps",
-      "BackendStatusLabel": "No backend"
+      "BackendStatusLabel": "Backend ready"
     }
   ]
 }
