@@ -1,5 +1,0 @@
-D:\Program\AppLauncher\bin\Release\net10.0-windows\win-x64\publish\AppLauncher.exe
-D:\Program\AppLauncher\bin\Release\net10.0-windows\win-x64\publish\AppLauncher.dll
-D:\Program\AppLauncher\bin\Release\net10.0-windows\win-x64\publish\AppLauncher.deps.json
-D:\Program\AppLauncher\bin\Release\net10.0-windows\win-x64\publish\AppLauncher.runtimeconfig.json
-D:\Program\AppLauncher\bin\Release\net10.0-windows\win-x64\publish\AppLauncher.pdb
