@@ -1,6 +1,8 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,6 +14,22 @@ public partial class MainWindow : Window
     private readonly ConfigStore _configStore = new();
     private LauncherConfig _config = new();
     private int _sharedAppCount;
+
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    private static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool IsWindowVisible(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
+    private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
+    private delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
 
     public MainWindow()
     {
@@ -81,9 +99,9 @@ public partial class MainWindow : Window
         ProfileNameTextBox.Text = profile!.Name;
         ProfileAppsListBox.ItemsSource = profile.Apps;
         ProfileAppsListBox.Items.Refresh();
-
         BackendFolderTextBox.Text = profile.Backend.FolderPath;
         BackendCommandTextBox.Text = profile.Backend.Command;
+
         UpdateSummary();
         RefreshActionStates();
     }
@@ -100,6 +118,7 @@ public partial class MainWindow : Window
         _sharedAppCount = allApps.Count;
         ExistingAppsComboBox.ItemsSource = allApps;
         ExistingAppsComboBox.SelectedIndex = allApps.Count > 0 ? 0 : -1;
+
         UpdateSummary();
         RefreshActionStates();
     }
@@ -199,14 +218,9 @@ public partial class MainWindow : Window
         _config.Profiles.Remove(profile);
         ProfilesListBox.Items.Refresh();
 
-        if (_config.Profiles.Count == 0)
-        {
-            ProfilesListBox.SelectedIndex = -1;
-        }
-        else
-        {
-            ProfilesListBox.SelectedIndex = Math.Clamp(index, 0, _config.Profiles.Count - 1);
-        }
+        ProfilesListBox.SelectedIndex = _config.Profiles.Count == 0
+            ? -1
+            : Math.Clamp(index, 0, _config.Profiles.Count - 1);
 
         RefreshAppLibrary();
         RefreshProfileDetails();
@@ -381,13 +395,21 @@ public partial class MainWindow : Window
         SaveBackend_Click(sender, e);
 
         var startedCount = 0;
-        var errors = new StringBuilder();
+        var skippedCount = 0;
+        var issues = new StringBuilder();
 
         foreach (var app in profile.Apps)
         {
             if (string.IsNullOrWhiteSpace(app.Path) || !File.Exists(app.Path))
             {
-                errors.AppendLine($"- App not found: {app.Name} ({app.Path})");
+                issues.AppendLine($"- App not found: {app.Name} ({app.Path})");
+                continue;
+            }
+
+            if (IsAppAlreadyRunning(app.Path))
+            {
+                skippedCount++;
+                issues.AppendLine($"- Skipped '{app.Name}' because it is already running.");
                 continue;
             }
 
@@ -403,7 +425,7 @@ public partial class MainWindow : Window
             }
             catch (Exception ex)
             {
-                errors.AppendLine($"- Cannot start app '{app.Name}': {ex.Message}");
+                issues.AppendLine($"- Cannot start app '{app.Name}': {ex.Message}");
             }
         }
 
@@ -411,36 +433,150 @@ public partial class MainWindow : Window
         {
             if (!Directory.Exists(profile.Backend.FolderPath))
             {
-                errors.AppendLine($"- Backend folder not found: {profile.Backend.FolderPath}");
+                issues.AppendLine($"- Backend folder not found: {profile.Backend.FolderPath}");
             }
             else
             {
-                try
+                var terminalTitle = BuildTerminalTitle(profile);
+                if (IsTerminalWindowOpen(terminalTitle))
                 {
-                    Process.Start(new ProcessStartInfo
-                    {
-                        FileName = "cmd.exe",
-                        Arguments = $"/k {profile.Backend.Command}",
-                        WorkingDirectory = profile.Backend.FolderPath,
-                        UseShellExecute = true
-                    });
-                    startedCount++;
+                    skippedCount++;
+                    issues.AppendLine($"- Skipped backend for '{profile.Name}' because its Terminal window is already open.");
                 }
-                catch (Exception ex)
+                else
                 {
-                    errors.AppendLine($"- Cannot run backend command: {ex.Message}");
+                    try
+                    {
+                        Process.Start(new ProcessStartInfo
+                        {
+                            FileName = "wt.exe",
+                            Arguments = $"-w new --title {QuoteArgument(terminalTitle)} -d {QuoteArgument(profile.Backend.FolderPath)} cmd /k {QuoteArgument(profile.Backend.Command)}",
+                            WorkingDirectory = profile.Backend.FolderPath,
+                            UseShellExecute = true
+                        });
+                        startedCount++;
+                    }
+                    catch (Exception ex)
+                    {
+                        issues.AppendLine($"- Cannot run backend in Windows Terminal: {ex.Message}");
+                    }
                 }
             }
         }
 
-        if (errors.Length == 0)
+        if (issues.Length == 0)
         {
             MessageBox.Show($"Started {startedCount} item(s).", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
 
-        var message = $"Started {startedCount} item(s) with issues:\n\n{errors}";
-        MessageBox.Show(message, "Completed With Warnings", MessageBoxButton.OK, MessageBoxImage.Warning);
+        var title = skippedCount > 0 ? "Completed With Notes" : "Completed With Warnings";
+        var message = $"Started {startedCount} item(s).";
+        if (skippedCount > 0)
+        {
+            message += $" Skipped {skippedCount} item(s) already running.\n\n";
+        }
+        else
+        {
+            message += "\n\n";
+        }
+
+        message += issues.ToString();
+        MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Information);
+    }
+
+    private static bool IsAppAlreadyRunning(string appPath)
+    {
+        var fullPath = Path.GetFullPath(appPath);
+        var processName = Path.GetFileNameWithoutExtension(fullPath);
+
+        foreach (var process in Process.GetProcessesByName(processName))
+        {
+            try
+            {
+                var runningPath = process.MainModule?.FileName;
+                if (!string.IsNullOrWhiteSpace(runningPath)
+                    && string.Equals(Path.GetFullPath(runningPath), fullPath, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+
+                if (string.Equals(process.ProcessName, processName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+            catch (InvalidOperationException)
+            {
+            }
+            catch (Win32Exception)
+            {
+                if (string.Equals(process.ProcessName, processName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+            finally
+            {
+                process.Dispose();
+            }
+        }
+
+        return false;
+    }
+
+    private static string BuildTerminalTitle(ProfileConfig profile)
+    {
+        return $"AppLauncher | {profile.Name}";
+    }
+
+    private static bool IsTerminalWindowOpen(string terminalTitle)
+    {
+        var isOpen = false;
+
+        EnumWindows((hWnd, _) =>
+        {
+            if (!IsWindowVisible(hWnd))
+            {
+                return true;
+            }
+
+            GetWindowThreadProcessId(hWnd, out var processId);
+            Process? process = null;
+
+            try
+            {
+                process = Process.GetProcessById((int)processId);
+                if (!string.Equals(process.ProcessName, "WindowsTerminal", StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+
+                var titleBuilder = new StringBuilder(256);
+                _ = GetWindowText(hWnd, titleBuilder, titleBuilder.Capacity);
+                if (string.Equals(titleBuilder.ToString(), terminalTitle, StringComparison.OrdinalIgnoreCase))
+                {
+                    isOpen = true;
+                    return false;
+                }
+            }
+            catch
+            {
+            }
+            finally
+            {
+                process?.Dispose();
+            }
+
+            return true;
+        }, IntPtr.Zero);
+
+        return isOpen;
+    }
+
+    private static string QuoteArgument(string value)
+    {
+        return $"\"{value.Replace("\"", "\\\"")}\"";
     }
 }
 

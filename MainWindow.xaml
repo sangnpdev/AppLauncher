@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="App Launcher"
+        Icon="image/icon-app.ico"
         Height="820"
         Width="1320"
         MinHeight="760"
@@ -77,12 +78,137 @@
                                 Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="12">
+                                CornerRadius="12"
+                                RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform x:Name="ButtonScale" ScaleX="1" ScaleY="1" />
+                                    <TranslateTransform x:Name="ButtonTranslate" Y="0" />
+                                </TransformGroup>
+                            </Border.RenderTransform>
+                            <Border.Effect>
+                                <DropShadowEffect x:Name="ButtonShadow"
+                                                  BlurRadius="18"
+                                                  Direction="270"
+                                                  ShadowDepth="0"
+                                                  Color="#1F000000"
+                                                  Opacity="0.14" />
+                            </Border.Effect>
                             <ContentPresenter Margin="{TemplateBinding Padding}"
                                               HorizontalAlignment="Center"
                                               VerticalAlignment="Center" />
                         </Border>
                         <ControlTemplate.Triggers>
+                            <EventTrigger RoutedEvent="MouseEnter">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="ButtonScale"
+                                                         Storyboard.TargetProperty="ScaleX"
+                                                         To="1.015"
+                                                         Duration="0:0:0.12" />
+                                        <DoubleAnimation Storyboard.TargetName="ButtonScale"
+                                                         Storyboard.TargetProperty="ScaleY"
+                                                         To="1.015"
+                                                         Duration="0:0:0.12" />
+                                        <DoubleAnimation Storyboard.TargetName="ButtonTranslate"
+                                                         Storyboard.TargetProperty="Y"
+                                                         To="-1"
+                                                         Duration="0:0:0.12" />
+                                        <DoubleAnimation Storyboard.TargetName="ButtonShadow"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="0.2"
+                                                         Duration="0:0:0.12" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="ButtonScale"
+                                                         Storyboard.TargetProperty="ScaleX"
+                                                         To="1"
+                                                         Duration="0:0:0.14" />
+                                        <DoubleAnimation Storyboard.TargetName="ButtonScale"
+                                                         Storyboard.TargetProperty="ScaleY"
+                                                         To="1"
+                                                         Duration="0:0:0.14" />
+                                        <DoubleAnimation Storyboard.TargetName="ButtonTranslate"
+                                                         Storyboard.TargetProperty="Y"
+                                                         To="0"
+                                                         Duration="0:0:0.14" />
+                                        <DoubleAnimation Storyboard.TargetName="ButtonShadow"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="0.14"
+                                                         Duration="0:0:0.14" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="PreviewMouseLeftButtonUp">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="ButtonScale"
+                                                         Storyboard.TargetProperty="ScaleX"
+                                                         To="1.015"
+                                                         Duration="0:0:0.08" />
+                                        <DoubleAnimation Storyboard.TargetName="ButtonScale"
+                                                         Storyboard.TargetProperty="ScaleY"
+                                                         To="1.015"
+                                                         Duration="0:0:0.08" />
+                                        <DoubleAnimation Storyboard.TargetName="ButtonTranslate"
+                                                         Storyboard.TargetProperty="Y"
+                                                         To="-1"
+                                                         Duration="0:0:0.08" />
+                                        <DoubleAnimation Storyboard.TargetName="ButtonShadow"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="0.2"
+                                                         Duration="0:0:0.08" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="PreviewMouseLeftButtonDown">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="ButtonScale"
+                                                         Storyboard.TargetProperty="ScaleX"
+                                                         To="0.985"
+                                                         Duration="0:0:0.06" />
+                                        <DoubleAnimation Storyboard.TargetName="ButtonScale"
+                                                         Storyboard.TargetProperty="ScaleY"
+                                                         To="0.985"
+                                                         Duration="0:0:0.06" />
+                                        <DoubleAnimation Storyboard.TargetName="ButtonTranslate"
+                                                         Storyboard.TargetProperty="Y"
+                                                         To="1"
+                                                         Duration="0:0:0.06" />
+                                        <DoubleAnimation Storyboard.TargetName="ButtonShadow"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="0.08"
+                                                         Duration="0:0:0.06" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="LostMouseCapture">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="ButtonScale"
+                                                         Storyboard.TargetProperty="ScaleX"
+                                                         To="1"
+                                                         Duration="0:0:0.12" />
+                                        <DoubleAnimation Storyboard.TargetName="ButtonScale"
+                                                         Storyboard.TargetProperty="ScaleY"
+                                                         To="1"
+                                                         Duration="0:0:0.12" />
+                                        <DoubleAnimation Storyboard.TargetName="ButtonTranslate"
+                                                         Storyboard.TargetProperty="Y"
+                                                         To="0"
+                                                         Duration="0:0:0.12" />
+                                        <DoubleAnimation Storyboard.TargetName="ButtonShadow"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="0.14"
+                                                         Duration="0:0:0.12" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.92" />
                             </Trigger>
@@ -175,7 +301,7 @@
 
                 <StackPanel>
                     <TextBlock Text="App Launcher" FontFamily="Segoe UI Variable Display" FontSize="30" FontWeight="SemiBold" Foreground="{StaticResource PrimaryTextBrush}" />
-                    <TextBlock Text="Fluent-style launcher cho Windows 11." Margin="0,6,0,0" FontSize="13" Foreground="{StaticResource SecondaryTextBrush}" TextWrapping="Wrap" />
+                    <TextBlock Text="Fluent-style launcher built for Windows 11." Margin="0,6,0,0" FontSize="13" Foreground="{StaticResource SecondaryTextBrush}" TextWrapping="Wrap" />
                 </StackPanel>
 
                 <UniformGrid Grid.Row="1" Columns="2" Margin="0,20,0,20">
@@ -210,7 +336,7 @@
                     </Grid.RowDefinitions>
                     <StackPanel Margin="0,0,0,14">
                         <TextBlock Text="Profiles" FontSize="22" FontWeight="SemiBold" Foreground="{StaticResource PrimaryTextBrush}" />
-                        <TextBlock Text="Chon workspace ben trai, chinh sua va khoi dong ben phai." Margin="0,6,0,0" FontSize="13" Foreground="{StaticResource SecondaryTextBrush}" TextWrapping="Wrap" />
+                        <TextBlock Text="Pick a workspace on the left, then edit and launch it on the right." Margin="0,6,0,0" FontSize="13" Foreground="{StaticResource SecondaryTextBrush}" TextWrapping="Wrap" />
                     </StackPanel>
                     <ListBox x:Name="ProfilesListBox"
                              Grid.Row="1"
@@ -222,7 +348,7 @@
                 </Grid>
 
                 <Border Grid.Row="4" Margin="0,18,0,0" Background="#FFFFFF" BorderBrush="{StaticResource SubtleStrokeBrush}" BorderThickness="1" CornerRadius="14" Padding="14">
-                    <TextBlock Text="Luu app trong mot profile bat ky, sau do co the them nhanh vao profile khac tu library." FontSize="13" Foreground="{StaticResource SecondaryTextBrush}" TextWrapping="Wrap" />
+                    <TextBlock Text="Save an app in any profile, then add it quickly to other profiles from the shared library." FontSize="13" Foreground="{StaticResource SecondaryTextBrush}" TextWrapping="Wrap" />
                 </Border>
             </Grid>
         </Border>
@@ -273,7 +399,7 @@
                     <Border Grid.Column="0" Style="{StaticResource CardStyle}">
                         <StackPanel>
                             <TextBlock Text="Profile Details" FontSize="22" FontWeight="SemiBold" Foreground="{StaticResource PrimaryTextBrush}" />
-                            <TextBlock Text="Dat ten de nhan dien nhanh tung bo workspace." Margin="0,6,0,20" FontSize="13" Foreground="{StaticResource SecondaryTextBrush}" TextWrapping="Wrap" />
+                            <TextBlock Text="Give each workspace a clear name so it is easy to identify at a glance." Margin="0,6,0,20" FontSize="13" Foreground="{StaticResource SecondaryTextBrush}" TextWrapping="Wrap" />
                             <TextBlock Text="Profile name" Margin="0,0,0,8" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource SecondaryTextBrush}" />
                             <Border Style="{StaticResource InputHostStyle}">
                                 <TextBox x:Name="ProfileNameTextBox" Style="{StaticResource FluentTextBoxStyle}" />
@@ -285,7 +411,7 @@
                     <Border Grid.Column="2" Style="{StaticResource CardStyle}">
                         <StackPanel>
                             <TextBlock Text="Backend Task" FontSize="22" FontWeight="SemiBold" Foreground="{StaticResource PrimaryTextBrush}" />
-                            <TextBlock Text="Luu folder va command neu profile nay can chay them backend service." Margin="0,6,0,20" FontSize="13" Foreground="{StaticResource SecondaryTextBrush}" TextWrapping="Wrap" />
+                            <TextBlock Text="Save a folder and command if this profile also needs to run a backend service." Margin="0,6,0,20" FontSize="13" Foreground="{StaticResource SecondaryTextBrush}" TextWrapping="Wrap" />
                             <TextBlock Text="Folder" Margin="0,0,0,8" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource SecondaryTextBrush}" />
                             <Grid Margin="0,0,0,16">
                                 <Grid.ColumnDefinitions>
@@ -310,7 +436,7 @@
                 <Border Style="{StaticResource CardStyle}">
                     <StackPanel>
                         <TextBlock Text="Apps In Profile" FontSize="22" FontWeight="SemiBold" Foreground="{StaticResource PrimaryTextBrush}" />
-                        <TextBlock Text="Ket hop app co san trong library va them app moi trong cung mot profile." Margin="0,6,0,20" FontSize="13" Foreground="{StaticResource SecondaryTextBrush}" TextWrapping="Wrap" />
+                        <TextBlock Text="Combine apps from the shared library with brand-new apps inside the same profile." Margin="0,6,0,20" FontSize="13" Foreground="{StaticResource SecondaryTextBrush}" TextWrapping="Wrap" />
                         <Grid Margin="0,0,0,18">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -340,7 +466,7 @@
                         <Border Margin="0,20,0,0" Background="#FFFFFF" BorderBrush="{StaticResource SubtleStrokeBrush}" BorderThickness="1" CornerRadius="18" Padding="18">
                             <StackPanel>
                                 <TextBlock Text="Add New App" FontSize="22" FontWeight="SemiBold" Foreground="{StaticResource PrimaryTextBrush}" />
-                                <TextBlock Text="Nhap duong dan den file .exe va display name neu muon hien thi ten rieng." Margin="0,6,0,18" FontSize="13" Foreground="{StaticResource SecondaryTextBrush}" TextWrapping="Wrap" />
+                                <TextBlock Text="Enter the path to the .exe file and an optional display name if you want a custom label." Margin="0,6,0,18" FontSize="13" Foreground="{StaticResource SecondaryTextBrush}" TextWrapping="Wrap" />
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />

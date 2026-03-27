@@ -41,13 +41,21 @@
         {
           "Name": "Visual Studio 2026",
           "Path": "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\Common7\\IDE\\devenv.exe"
+        },
+        {
+          "Name": "Docker Desktop",
+          "Path": "C:\\Program Files\\Docker\\Docker\\Docker Desktop.exe"
+        },
+        {
+          "Name": "Code",
+          "Path": "D:\\Application\\Microsoft VS Code\\Code.exe"
         }
       ],
       "Backend": {
         "FolderPath": "D:\\Program\\food-market-narrator\\FoodMarketNarrator.Api",
         "Command": "dotnet run"
       },
-      "AppCountLabel": "2 apps",
+      "AppCountLabel": "4 apps",
       "BackendStatusLabel": "Backend ready"
     }
   ]
