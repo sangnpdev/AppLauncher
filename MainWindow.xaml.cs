@@ -82,6 +82,7 @@ public partial class MainWindow : Window
         BrowseBackendFolderButton.IsEnabled = hasProfile;
         SaveBackendButton.IsEnabled = hasProfile;
         StartSelectedProfileButton.IsEnabled = hasProfile;
+        LaunchEvenIfRunningCheckBox.IsEnabled = hasProfile;
 
         if (!hasProfile)
         {
@@ -91,6 +92,7 @@ public partial class MainWindow : Window
             NewAppPathTextBox.Text = string.Empty;
             BackendFolderTextBox.Text = string.Empty;
             BackendCommandTextBox.Text = string.Empty;
+            LaunchEvenIfRunningCheckBox.IsChecked = false;
             UpdateSummary();
             RefreshActionStates();
             return;
@@ -101,6 +103,7 @@ public partial class MainWindow : Window
         ProfileAppsListBox.Items.Refresh();
         BackendFolderTextBox.Text = profile.Backend.FolderPath;
         BackendCommandTextBox.Text = profile.Backend.Command;
+        LaunchEvenIfRunningCheckBox.IsChecked = profile.LaunchEvenIfRunning;
 
         UpdateSummary();
         RefreshActionStates();
@@ -400,6 +403,18 @@ public partial class MainWindow : Window
         SaveConfig();
     }
 
+    private void LaunchEvenIfRunningCheckBox_Changed(object sender, RoutedEventArgs e)
+    {
+        var profile = GetSelectedProfile();
+        if (profile is null)
+        {
+            return;
+        }
+
+        profile.LaunchEvenIfRunning = LaunchEvenIfRunningCheckBox.IsChecked == true;
+        SaveConfig();
+    }
+
     private void StartSelectedProfile_Click(object sender, RoutedEventArgs e)
     {
         var profile = GetSelectedProfile();
@@ -414,6 +429,7 @@ public partial class MainWindow : Window
         var startedCount = 0;
         var skippedCount = 0;
         var issues = new StringBuilder();
+        var launchEvenIfRunning = profile.LaunchEvenIfRunning;
 
         foreach (var app in profile.Apps)
         {
@@ -423,7 +439,7 @@ public partial class MainWindow : Window
                 continue;
             }
 
-            if (IsAppAlreadyRunning(app.Path))
+            if (!launchEvenIfRunning && IsAppAlreadyRunning(app.Path))
             {
                 skippedCount++;
                 issues.AppendLine($"- Skipped '{app.Name}' because it is already running.");
@@ -455,7 +471,7 @@ public partial class MainWindow : Window
             else
             {
                 var terminalTitle = BuildTerminalTitle(profile);
-                if (IsTerminalWindowOpen(terminalTitle))
+                if (!launchEvenIfRunning && IsTerminalWindowOpen(terminalTitle))
                 {
                     skippedCount++;
                     issues.AppendLine($"- Skipped backend for '{profile.Name}' because its Terminal window is already open.");
@@ -613,6 +629,7 @@ public sealed class ProfileConfig
     public string Name { get; set; } = "Profile";
     public List<AppEntry> Apps { get; set; } = [];
     public BackendConfig Backend { get; set; } = new();
+    public bool LaunchEvenIfRunning { get; set; } = true;
 
     public string AppCountLabel => Apps.Count == 1 ? "1 app" : $"{Apps.Count} apps";
     public string BackendStatusLabel => string.IsNullOrWhiteSpace(Backend.Command) ? "No backend" : "Backend ready";

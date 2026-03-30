@@ -405,6 +405,13 @@
                                 <TextBox x:Name="ProfileNameTextBox" Style="{StaticResource FluentTextBoxStyle}" />
                             </Border>
                             <Button x:Name="SaveProfileNameButton" Content="Save Name" Width="132" Margin="0,16,0,0" HorizontalAlignment="Left" Style="{StaticResource BaseButtonStyle}" Click="SaveProfileName_Click" />
+                            <CheckBox x:Name="LaunchEvenIfRunningCheckBox"
+                                      Margin="0,16,0,0"
+                                      Content="Launch again even if app/backend is already running"
+                                      FontSize="13"
+                                      Foreground="{StaticResource SecondaryTextBrush}"
+                                      Checked="LaunchEvenIfRunningCheckBox_Changed"
+                                      Unchecked="LaunchEvenIfRunningCheckBox_Changed" />
                         </StackPanel>
                     </Border>
 

@@ -28,6 +28,7 @@
         "FolderPath": "",
         "Command": ""
       },
+      "LaunchEvenIfRunning": true,
       "AppCountLabel": "5 apps",
       "BackendStatusLabel": "No backend"
     },
@@ -55,6 +56,7 @@
         "FolderPath": "D:\\Program\\food-market-narrator\\FoodMarketNarrator.Api",
         "Command": "dotnet run"
       },
+      "LaunchEvenIfRunning": true,
       "AppCountLabel": "4 apps",
       "BackendStatusLabel": "Backend ready"
     }
