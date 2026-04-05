@@ -50,6 +50,10 @@
         {
           "Name": "Code",
           "Path": "D:\\Application\\Microsoft VS Code\\Code.exe"
+        },
+        {
+          "Name": "Mongo Comprass",
+          "Path": "C:\\Users\\phuoc\\AppData\\Local\\MongoDBCompass\\MongoDBCompass.exe"
         }
       ],
       "Backend": {
@@ -57,7 +61,7 @@
         "Command": "dotnet run"
       },
       "LaunchEvenIfRunning": true,
-      "AppCountLabel": "4 apps",
+      "AppCountLabel": "5 apps",
       "BackendStatusLabel": "Backend ready"
     }
   ]
