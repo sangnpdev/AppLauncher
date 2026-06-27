@@ -11,6 +11,8 @@ namespace AppLauncher;
 
 public partial class MainWindow : Window
 {
+    private static readonly TimeSpan AppLaunchDelay = TimeSpan.FromSeconds(3);
+
     private readonly ConfigStore _configStore = new();
     private LauncherConfig _config = new();
     private int _sharedAppCount;
@@ -415,7 +417,7 @@ public partial class MainWindow : Window
         SaveConfig();
     }
 
-    private void StartSelectedProfile_Click(object sender, RoutedEventArgs e)
+    private async void StartSelectedProfile_Click(object sender, RoutedEventArgs e)
     {
         var profile = GetSelectedProfile();
         if (profile is null)
@@ -431,8 +433,11 @@ public partial class MainWindow : Window
         var issues = new StringBuilder();
         var launchEvenIfRunning = profile.LaunchEvenIfRunning;
 
-        foreach (var app in profile.Apps)
+        for (var index = 0; index < profile.Apps.Count; index++)
         {
+            var app = profile.Apps[index];
+            var appStarted = false;
+
             if (string.IsNullOrWhiteSpace(app.Path) || !File.Exists(app.Path))
             {
                 issues.AppendLine($"- App not found: {app.Name} ({app.Path})");
@@ -455,10 +460,16 @@ public partial class MainWindow : Window
                     UseShellExecute = true
                 });
                 startedCount++;
+                appStarted = true;
             }
             catch (Exception ex)
             {
                 issues.AppendLine($"- Cannot start app '{app.Name}': {ex.Message}");
+            }
+
+            if (appStarted && index < profile.Apps.Count - 1)
+            {
+                await Task.Delay(AppLaunchDelay);
             }
         }
 

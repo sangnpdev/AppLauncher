@@ -28,9 +28,14 @@
         "FolderPath": "",
         "Command": ""
       },
+      "Docker": {
+        "FolderPath": "",
+        "Command": "",
+        "ContainerName": ""
+      },
       "LaunchEvenIfRunning": true,
       "AppCountLabel": "5 apps",
-      "BackendStatusLabel": "No backend"
+      "BackendStatusLabel": "No startup task"
     },
     {
       "Name": "Food Market Narrator",
@@ -59,6 +64,11 @@
       "Backend": {
         "FolderPath": "D:\\Program\\food-market-narrator\\FoodMarketNarrator.Api",
         "Command": "dotnet run"
+      },
+      "Docker": {
+        "FolderPath": "",
+        "Command": "",
+        "ContainerName": ""
       },
       "LaunchEvenIfRunning": true,
       "AppCountLabel": "5 apps",
